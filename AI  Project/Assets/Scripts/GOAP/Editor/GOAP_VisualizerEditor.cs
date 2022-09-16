@@ -18,11 +18,13 @@ public class GOAP_VisualizerEditor : EditorWindow
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
 
-      
-        // Import UXML
+        var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
+        root.Add(splitView); 
+        var leftPane = new ListView();
+        splitView.Add(leftPane);
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/GOAP/Editor/GOAP_VisualizerEditor.uxml");
         VisualElement labelFromUXML = visualTree.Instantiate();
-        root.Add(labelFromUXML);
+        splitView.Add(labelFromUXML);
 
         var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/GOAP/Editor/GOAP_VisualizerEditor.uss");
         root.styleSheets.Add(styleSheet);
