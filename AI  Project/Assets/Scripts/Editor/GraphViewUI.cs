@@ -13,7 +13,7 @@ public class GraphViewUI : GraphView
         this.AddManipulator(new ContentDragger());
         this.AddManipulator(new SelectionDragger());
         this.AddManipulator(new RectangleSelector());
-        var styleSheet = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/GOAP/Editor/GOAP_VisualizerEditor.uss");
+        var styleSheet = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/Editor/GridViewUI.uss");
         styleSheets.Add(styleSheet);
     }
 }

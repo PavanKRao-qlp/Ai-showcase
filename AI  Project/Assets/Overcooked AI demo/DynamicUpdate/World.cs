@@ -5,9 +5,8 @@ using UnityEngine;
 
 namespace PlantTest
 {
-    public class World
-    {
-        public GoapWorldState WorldStateSet;
+    public class World : GOAP_World
+    {       
         public World()
         {
             WorldStateSet = new GoapWorldState();

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract  class GOAP_World
 {
-   
+    public GoapWorldState WorldStateSet { get; protected set; }
 }
