@@ -1,3 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Scripts/GOAP/Editor/GOAP_VisualizerEditor.uss?fileID=7433441132597879392&amp;guid=ef225ef21424f964698f11c48778b99a&amp;type=3#GOAP_VisualizerEditor" />
-</ui:UXML>
