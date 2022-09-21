@@ -8,3 +8,8 @@ GridBackground {
     background-color: rgba(0, 0, 0, 255);
     background-image: none;
 }
+
+NodeViewUI {   
+    opacity: 1;
+    background-color: rgba(25, 25, 25, 255);
+    }

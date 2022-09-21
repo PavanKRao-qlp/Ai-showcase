@@ -7,7 +7,7 @@ using UnityEngine;
 public class BehaviorTreeScriptableObject : ScriptableObject
 {
     [HideInInspector] public int BehaviorTree = 10;
-    [HideInInspector] public BTNodeSO childNode;
+     public RootBTNodeSO RootNode;
     public List<BTNodeSO> childNodes;
     public BehaviorTreeScriptableObject()
     {
@@ -17,9 +17,5 @@ public class BehaviorTreeScriptableObject : ScriptableObject
     {
         return null;
     }  
-}
-public class BehaviourTreeNodeScriptableObject<T> : ScriptableObject where T : BTNode
-{
-    public T NodeData;
 }
 

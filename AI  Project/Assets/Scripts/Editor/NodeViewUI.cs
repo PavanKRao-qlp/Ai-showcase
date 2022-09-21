@@ -6,6 +6,7 @@ public class NodeViewUI : Node
     public new class UxmlFactory : UxmlFactory<NodeViewUI, GraphView.UxmlTraits> { }
     public NodeViewUI()
     {
+        var styleSheet = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/Editor/GraphView.uss");
         this.title = "Action"; 
     }
 }
