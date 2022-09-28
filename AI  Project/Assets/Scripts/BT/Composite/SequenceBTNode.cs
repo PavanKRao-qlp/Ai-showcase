@@ -1,24 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class SequenceBTNode : CompositeBTNode
 {
-    private int currentIndex;
-    public SequenceBTNode()
+    public override void OnEnter() {}
+
+    public override void OnExit(IBTNode.ReturnStatus status)
     {
-        currentIndex = 0;
+        foreach (var child in ChildNodes)
+        {
+            child.Reset();
+        }
     }
-    public override BTNode.ReturnStatus Tick()
+
+    public override IBTNode.ReturnStatus OnUpdate()
     {
         foreach (var child in ChildNodes)
         {
             var childStatus = child.Tick();
-            if (childStatus != BTNode.ReturnStatus.SUCCESS)
+            if (childStatus != IBTNode.ReturnStatus.SUCCESS)
             {
                 return childStatus;
             }
         }
-        return BTNode.ReturnStatus.SUCCESS;
+        return IBTNode.ReturnStatus.SUCCESS;
+    }
+
+    public override void Reset()
+    {
+        status = IBTNode.ReturnStatus.INACTIVE;
+        foreach (var child in ChildNodes)
+        {
+            child.Reset();
+        }
+    }
+    public override void Abort()
+    {
+        throw new System.NotImplementedException();
     }
 }

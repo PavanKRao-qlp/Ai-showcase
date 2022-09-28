@@ -4,16 +4,42 @@ using UnityEngine;
 
 public class SelectorBTNode : CompositeBTNode
 {
-    public override BTNode.ReturnStatus Tick()
+    public override void Abort()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnEnter()
+    {
+    }
+
+    public override void OnExit(IBTNode.ReturnStatus status)
+    {
+        foreach (var child in ChildNodes)
+        {
+            child.Reset();
+        }
+    }
+
+    public override IBTNode.ReturnStatus OnUpdate()
     {
         foreach (var child in ChildNodes)
         {
             var childStatus = child.Tick();
-            if (childStatus != BTNode.ReturnStatus.FAILED)
+            if (childStatus != IBTNode.ReturnStatus.FAILED)
             {
                 return childStatus;
             }
         }
-        return BTNode.ReturnStatus.FAILED;
+        return IBTNode.ReturnStatus.FAILED;
+    }
+
+    public override void Reset()
+    {
+        status = IBTNode.ReturnStatus.INACTIVE;
+        foreach (var child in ChildNodes)
+        {
+            child.Reset();
+        }
     }
 }
