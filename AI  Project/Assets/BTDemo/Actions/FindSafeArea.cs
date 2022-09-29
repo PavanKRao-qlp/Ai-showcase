@@ -22,6 +22,6 @@ public class FindSafeArea : TaskBTNode
 
     public override void Reset()
     {
-        throw new System.NotImplementedException();
+        status = IBTNode.ReturnStatus.INACTIVE;
     }
 }

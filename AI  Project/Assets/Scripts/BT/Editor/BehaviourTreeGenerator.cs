@@ -103,7 +103,6 @@ public class BehaviourTreeGenerator : EditorWindow
 
     }
 
-
     private void OnSelectionChange()
     {
         CheckActiveSelection();
