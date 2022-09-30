@@ -22,7 +22,7 @@ public class AIManager : MonoBehaviour
         }
     }
 
-    public void Update()
+    public void LateUpdate()
     {
         TickActiveBehaviourTreeAgents();
     }

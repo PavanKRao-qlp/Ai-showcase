@@ -5,6 +5,9 @@ public abstract class TaskBTNode : IBTNode
     public BehaviorTree BT { get { return behaviorTree; } set { behaviorTree = value; } }
     protected IBTNode.ReturnStatus status = IBTNode.ReturnStatus.INACTIVE;
 
+    public System.Action<IBTNode.ReturnStatus> OnTick { get; set; }
+    public string Name { get; set; }
+
     public abstract void OnEnter();
     public abstract void OnExit(IBTNode.ReturnStatus status);
     public abstract IBTNode.ReturnStatus OnUpdate();
@@ -17,9 +20,13 @@ public abstract class TaskBTNode : IBTNode
             status = IBTNode.ReturnStatus.RUNNING;
         }
         if (status != IBTNode.ReturnStatus.RUNNING && status != IBTNode.ReturnStatus.INACTIVE) return status;
-        status = OnUpdate();
+        var curStatus = status = OnUpdate();
         if (status != IBTNode.ReturnStatus.RUNNING) OnExit(status);
-        return status;
+#if UNITY_EDITOR
+        OnTick?.Invoke(curStatus);
+#endif
+        UnityEngine.Debug.Log($"Pvn {this.GetType().Name} {this.Name}  {curStatus}");
+        return curStatus;
     }
     public abstract void Reset();
     public abstract void Abort();

@@ -41,17 +41,21 @@ public class EnemyAi : MonoBehaviour , IAgentBT
         bt.RootNode.SetChild(
             new SelectorBTNode()
             {
+                Name = "Selector",
                 BT = bt,
                 ChildNodes = new List<IBTNode>()
                 {
                     new SequenceBTNode()
                     {
+
+                Name = "Death seq",
                         BT = bt,
                         ChildNodes = new List<IBTNode>()
                         {
                             new CheckHealthBelowX(0) {BT = bt}, //todo check if health < 0
                             new PlayAnimation("Dead"){BT = bt},
                             new RepeatBTNode(){
+                                  Name = "DeathRepeat",
                                 BT = bt,
                                 ChildNode = new AlwasySucceedlBTNode(){BT = bt}
                             }
@@ -59,17 +63,20 @@ public class EnemyAi : MonoBehaviour , IAgentBT
                     },
                     new SequenceBTNode
                     {
+                        Name = "player visible seq",
                         BT = bt,
                         ChildNodes = new List<IBTNode>()
                         {
                             new CheckIfPlayerIsVisible() {BT = bt},// check if player is visible
                             new SelectorBTNode()
                             {
+                                Name = "visible health select",
                                 BT = bt,
                                 ChildNodes = new List<IBTNode>()
                                 {
                                     new SequenceBTNode()
                                     {
+                                        Name = "safe area seq",
                                         BT = bt,
                                         ChildNodes = new List<IBTNode>()
                                         {

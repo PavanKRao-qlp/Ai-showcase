@@ -21,7 +21,7 @@ public class BTDebugModeGraph : GraphViewUI
     private void PositionNodes(DebugModeBTNodeView nodeView, Vector2 pos, int width = 0)
     {
         int space = 200;
-        nodeView.style.left = pos.x;
+        nodeView.style.top = pos.x;
         int yIx = 0;
         if (nodeView.ParentNode != null) {
             yIx += nodeView.ParentNode.Ypos;
@@ -31,7 +31,7 @@ public class BTDebugModeGraph : GraphViewUI
             }
         }
        // if (width > 3) nodeView.style.visibility = Visibility.Hidden;
-        nodeView.style.top = yIx * space + (space * (nodeView.childSpan/2f));
+        nodeView.style.left  = yIx * space + (space * (nodeView.childSpan/2f));
         nodeView.Ypos = yIx;
         for (int i = 0; i < nodeView.ChildNodes.Count; i++)
         {
@@ -98,12 +98,14 @@ public class BTDebugModeGraph : GraphViewUI
             var childPort = GeneratePort(nodeView, Direction.Output, nodeView.outputContainer);
             nodeView.ChildNodes.Add(childNode);
             childNode.ParentNode = nodeView;
-            ConnectPorts(childPort, childNode.ParentPort);
+            var edge = ConnectPorts(childPort, childNode.ParentPort);
+            childNode.ParentEdge = edge;
             ix++;
         }
-        nodeView.inputContainer.parent.style.flexDirection = FlexDirection.Row;
-        nodeView.inputContainer.style.flexDirection = FlexDirection.Row;
-        nodeView.outputContainer.style.flexDirection = FlexDirection.Row;
+        //var vsElement = new VisualElement();
+        //vsElement.style.backgroundColor = new Color(15, 15, 15);
+        //vsElement.Add(new Label("G"));
+        //nodeView.contentContainer.Add(vsElement);
         nodeView.RefreshPorts();
         nodeView.RefreshExpandedState();
         return nodeView;
@@ -119,22 +121,24 @@ public class BTDebugModeGraph : GraphViewUI
             title = nodeType.Name,
             NodeData = node
         };
+        node.OnTick += nodeView.RefreshUIOnTick;
         this.AddElement(nodeView);
         return (nodeView);
     }
 
     private Port GeneratePort(DebugModeBTNodeView nodeView ,Direction direction, VisualElement container)
     {
-        Port port = nodeView.InstantiatePort(Orientation.Horizontal,direction, Port.Capacity.Single, typeof(IBTNode));
+        Port port = nodeView.InstantiatePort(Orientation.Vertical,direction, Port.Capacity.Single, typeof(IBTNode));
         port.portName = "";
         container.Add(port);
         return port;
     }
-    private void ConnectPorts(Port inPort, Port outPort)
+    private Edge ConnectPorts(Port inPort, Port outPort)
     {
         var edge = inPort.ConnectTo(outPort);
-        edge.pickingMode = PickingMode.Ignore;
+       // edge.pickingMode = PickingMode.Ignore;
         AddElement(edge);
+        return edge;
     }
 
     public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)

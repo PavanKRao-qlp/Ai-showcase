@@ -5,6 +5,8 @@ public class RootBTNode : IBTNode
     public BehaviorTree BT { get { return behaviorTree; } set { behaviorTree = value; } }
     [System.NonSerialized] private BehaviorTree behaviorTree;
     protected IBTNode.ReturnStatus status = IBTNode.ReturnStatus.INACTIVE;
+    public System.Action<IBTNode.ReturnStatus> OnTick { get; set; }
+    public string Name { get; set; }
 
     public IBTNode.ReturnStatus Tick()
     {
@@ -14,9 +16,13 @@ public class RootBTNode : IBTNode
             status = IBTNode.ReturnStatus.RUNNING;
         }
         if (status != IBTNode.ReturnStatus.RUNNING && status != IBTNode.ReturnStatus.INACTIVE) return status;
-        status = OnUpdate();
+        var curStatus = status = OnUpdate();
         if (status != IBTNode.ReturnStatus.RUNNING) OnExit(status);
-        return status;
+#if UNITY_EDITOR
+        OnTick?.Invoke(curStatus);
+#endif
+        UnityEngine.Debug.Log($"Pvn {this.GetType().Name} {this.Name}  {curStatus}");
+        return curStatus;
     }
 
     public void SetChild(CompositeBTNode node)
@@ -26,7 +32,7 @@ public class RootBTNode : IBTNode
 
     public void OnEnter() { }
     public void OnExit(IBTNode.ReturnStatus status) {
-        Reset();
+        //Reset();
     }
     public IBTNode.ReturnStatus OnUpdate()
     {       
