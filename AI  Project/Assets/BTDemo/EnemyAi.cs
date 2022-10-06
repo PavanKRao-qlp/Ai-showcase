@@ -13,9 +13,14 @@ public class EnemyAi : MonoBehaviour , IAgentBT
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private int health = 100;
     [SerializeField] private TextMesh label;
+    
+    public AIManager AIManagerRef {
+        private get; set; 
+    }
+
+    #region IAgentBT
     public string Id => GetAgentId();
-    public BehaviorTree ActiveBehaviorTree => activeBehaviorTree;   
-    public AIManager AIManagerRef { private get; set; }
+    public BehaviorTree ActiveBehaviorTree => activeBehaviorTree;
     public GameObject GameObject => this.gameObject;
     private BehaviorTree activeBehaviorTree;
     private string GetAgentId()
@@ -23,16 +28,95 @@ public class EnemyAi : MonoBehaviour , IAgentBT
         if (string.IsNullOrEmpty(agentId)) agentId = Guid.NewGuid().ToString();
         return agentId;
     }
+    #endregion
 
     void Start()
     {
-        activeBehaviorTree = BuildBT();
-        AIManagerRef.BlackBoard.GetEntity(Id).health = health;
-        AIManagerRef.BlackBoard.GetEntity(Id).canSeeTarget = false;
-        AIManagerRef.BlackBoard.GetEntity(Id).targetId = "";
+        this.AIManagerRef.BlackBoard.AddEntity(Id);
+        var BBEntity = AIManagerRef.BlackBoard.GetEntity(Id);
+        BBEntity.canSeeTarget = false;
+        BBEntity.targetId = "";
+        BBEntity.health = health;
+        BBEntity.condtition = 0;
+        activeBehaviorTree = BuildBTTreeV3();
     }
 
-    public BehaviorTree BuildBT()
+    public BehaviorTree BuildBTTreeV2()
+    {
+        var btBuilder = new BehaviourTreeBuilder()
+            .AttachAgent(this)
+            .AttachBlackBoard(AIManagerRef.BlackBoard)
+            .AttachSelector()
+                .AttachSequence()
+                    .AttachConditional(new CheckHealthBelowX(0))
+                    .AttachTask(new PlayAnimation("Dead"))
+                    .AttachDecorater(new RepeatBTNode())
+                        .AttachTask(new AlwasySucceedlBTNode())
+                    .End()
+                .End()
+                .AttachSequence()
+                    .AttachSequence()
+                        .AttachConditional(new CheckIfPlayerIsVisible())
+                        .AttachSelector()
+                            .AttachSequence()
+                                .AttachConditional(new CheckHealthBelowX(20))
+                                .AttachTask(new FindSafeArea())
+                                .AttachTask(new GoToPosition())
+                            .End()
+                            .AttachSequence()
+                                .AttachTask(new SetPositionNearTarget())
+                                .AttachTask(new GoToPosition())
+                                .AttachParallel()
+                                    .AttachComposite(new SelectorRandomBTNode())
+                                        .AttachTask(new PlayAnimation("Punch1"))
+                                        .AttachTask(new PlayAnimation("Punch2"))
+                                    .End()
+                                    .AttachSequence()
+                                        .AttachTask(new WaitXSec(0.4f))
+                                        .AttachTask(new AttackTarget())
+                                    .End()
+                                .End()
+                            .End()
+                        .End()
+                    .End()
+                .End()
+                .AttachSequence()
+                    .AttachTask(new SetRandomPositionNearby() { DistanceRange = 50})
+                    .AttachTask(new GoToPosition())
+                    .AttachDecorater(new RepeatBTNode(2))
+                        .AttachTask(new PlayAnimation("Idle"))
+                    .End()
+                .End()
+            .End();
+        return btBuilder.BuildTree();
+    }
+    public BehaviorTree BuildBTTreeV3()
+    {
+        var btBuilder = new BehaviourTreeBuilder()
+            .AttachAgent(this)
+            .AttachBlackBoard(AIManagerRef.BlackBoard)
+            .AttachSelector("select")
+                .AttachSequence("seqa")
+                    .AttachConditional(new DummyConditional(1))
+                    .AttachTask(new WaitXSec(5) { TagName = "a1" })
+                    .AttachTask(new WaitXSec(10) { TagName = "a2" })
+                .End()
+                //.AttachSequence()
+                //    .AttachConditional(new DummyConditional(2))
+                //    .AttachTask(new WaitXSec(5))
+                //    .AttachTask(new WaitXSec(10))
+                //.End()
+                .AttachSequence("seqb")
+                    .AttachTask(new WaitXSec(5) { TagName = "b1" })
+                    .AttachTask(new WaitXSec(10) { TagName = "b2" })
+                .End()
+            .End();
+        return btBuilder.BuildTree();
+    }
+
+
+    [Obsolete(message: "Use BTBuilder for cleaner code")]
+     public BehaviorTree BuildBT()
     {
         var bt = new BehaviorTree() {
             Agent = this,
@@ -41,21 +125,21 @@ public class EnemyAi : MonoBehaviour , IAgentBT
         bt.RootNode.SetChild(
             new SelectorBTNode()
             {
-                Name = "Selector",
+                TagName = "Selector",
                 BT = bt,
                 ChildNodes = new List<IBTNode>()
                 {
                     new SequenceBTNode()
                     {
 
-                Name = "Death seq",
+                TagName = "Death seq",
                         BT = bt,
                         ChildNodes = new List<IBTNode>()
                         {
                             new CheckHealthBelowX(0) {BT = bt}, //todo check if health < 0
                             new PlayAnimation("Dead"){BT = bt},
                             new RepeatBTNode(){
-                                  Name = "DeathRepeat",
+                                  TagName = "DeathRepeat",
                                 BT = bt,
                                 ChildNode = new AlwasySucceedlBTNode(){BT = bt}
                             }
@@ -63,20 +147,20 @@ public class EnemyAi : MonoBehaviour , IAgentBT
                     },
                     new SequenceBTNode
                     {
-                        Name = "player visible seq",
+                        TagName = "player visible seq",
                         BT = bt,
                         ChildNodes = new List<IBTNode>()
                         {
                             new CheckIfPlayerIsVisible() {BT = bt},// check if player is visible
                             new SelectorBTNode()
                             {
-                                Name = "visible health select",
+                                TagName = "visible health select",
                                 BT = bt,
                                 ChildNodes = new List<IBTNode>()
                                 {
                                     new SequenceBTNode()
                                     {
-                                        Name = "safe area seq",
+                                        TagName = "safe area seq",
                                         BT = bt,
                                         ChildNodes = new List<IBTNode>()
                                         {
@@ -89,19 +173,34 @@ public class EnemyAi : MonoBehaviour , IAgentBT
                                     {
                                         BT = bt,
                                         ChildNodes = new List<IBTNode>()
-                                        { 
+                                        {
+                                           new SetPositionNearTarget(){ BT = bt },  
                                            new GoToPosition(){ BT = bt },
                                            new ParallelBTNode()
-                                            {
+                                           {
                                                 BT = bt,
                                                 ChildNodes = new List<IBTNode>()
                                                 {
-                                                   // new selectorRandom->punch1/2 
-                                                    //new attackTarget
+                                                    new SelectorRandomBTNode()
+                                                    {
+                                                        BT = bt,
+                                                        ChildNodes = new List<IBTNode>()
+                                                        {
+                                                            new PlayAnimation("Punch1"){BT = bt},
+                                                            new PlayAnimation("Punch2"){BT = bt},
+                                                        }
+                                                    },
+                                                    new SequenceBTNode() 
+                                                    {
+                                                        BT = bt,
+                                                        ChildNodes = new List<IBTNode>()
+                                                        {
+                                                            new WaitXSec(0.4f){BT = bt},
+                                                            new AttackTarget() {BT = bt }
+                                                        }
+                                                    }                                                    
                                                 }
-                                            }
-                                            // new get position to 
-                                            // get away run animation 
+                                           }
                                         }
                                     }
                                 }
@@ -142,6 +241,22 @@ public class EnemyAi : MonoBehaviour , IAgentBT
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            var BBEntity = AIManagerRef.BlackBoard.GetEntity(Id);
+            BBEntity.condtition = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            var BBEntity = AIManagerRef.BlackBoard.GetEntity(Id);
+            BBEntity.condtition = 2;
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            var BBEntity = AIManagerRef.BlackBoard.GetEntity(Id);
+            BBEntity.condtition = 0;
+        }
+
         label.transform.LookAt(Camera.main.transform);
         label.text = $"[AI] Hp:{ AIManagerRef.BlackBoard.GetEntity(Id).health }";
 
@@ -155,9 +270,11 @@ public class EnemyAi : MonoBehaviour , IAgentBT
 
     public void CheckCanSeeTarget() {
         var foundTarget = false;
-        for (int i = 0; i <= 10; i++)
+        float angle = 90;
+        float fine = 15;
+        for (int i = 0; i <= fine; i++)
         {
-            var ray = new Ray(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-45 / 2 + ((i / 10f) * 45), Vector3.up) * (transform.forward.normalized * 20));
+            var ray = new Ray(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-angle / 2 + ((i / fine) * angle), Vector3.up) * (transform.forward.normalized * 20));
             RaycastHit hitinfo;
             if (Physics.Raycast(ray, out hitinfo, 20, layerMask) && hitinfo.collider.tag != "Untagged")
             {
@@ -177,12 +294,32 @@ public class EnemyAi : MonoBehaviour , IAgentBT
             }
             else
             {
-                Debug.DrawRay(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-45 / 2 + ((i / 10f) * 45), Vector3.up) * (transform.forward.normalized * 20), Color.green);
+                Debug.DrawRay(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), hitinfo.point == null ? hitinfo.point : Quaternion.AngleAxis(-angle / 2 + ((i / fine) * angle), Vector3.up) * (transform.forward.normalized * 20), Color.green);
             }
-            if (!foundTarget)
+        }
+        if (!foundTarget)
+        {
+            AIManagerRef.BlackBoard.GetEntity(Id).canSeeTarget = false;
+            AIManagerRef.BlackBoard.GetEntity(Id).targetId = "";
+        }
+    }
+
+    public void TryAttack()
+    {
+        float angle = 90;
+        float fine = 15;
+        for (int i = 0; i <= fine; i++)
+        {
+            var ray = new Ray(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-angle / 2 + ((i / fine) * angle), Vector3.up) * (transform.forward.normalized * 20));
+            RaycastHit hitinfo;
+            if (Physics.Raycast(ray, out hitinfo, 20, layerMask) && hitinfo.collider.gameObject.GetComponent<PlayerController>() != null)
             {
-                AIManagerRef.BlackBoard.GetEntity(Id).canSeeTarget = false;
-                AIManagerRef.BlackBoard.GetEntity(Id).targetId = "";
+                hitinfo.collider.gameObject.GetComponent<PlayerController>().GetAttacked();
+                break;
+            }
+            else
+            {
+                Debug.DrawRay(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), hitinfo.point == null ? hitinfo.point : Quaternion.AngleAxis(-angle / 2 + ((i / fine) * angle), Vector3.up) * (transform.forward.normalized * 20), Color.green);
             }
         }
     }

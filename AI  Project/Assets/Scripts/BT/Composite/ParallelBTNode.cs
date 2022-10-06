@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ParallelBTNode : CompositeBTNode
 {
-    public int MinNumberofSuccess;
+    public int MinNumberofSuccess = 1;
     private int currentIndex, failureCount, runningCount;
 
     public ParallelBTNode()
@@ -31,10 +31,12 @@ public class ParallelBTNode : CompositeBTNode
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
+        failureCount = 0;
+        runningCount = 0;
         foreach (var child in ChildNodes)
         {
             var childStatus = child.Tick();
-            if (childStatus == IBTNode.ReturnStatus.FAILED)
+            if (childStatus == IBTNode.ReturnStatus.FAILURE)
             {
                 failureCount++;
             }
@@ -43,12 +45,10 @@ public class ParallelBTNode : CompositeBTNode
                 runningCount++;
             }
         }
-        return (ChildNodes.Count - failureCount) >= MinNumberofSuccess ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILED;
+        if (runningCount > 0)
+            return IBTNode.ReturnStatus.RUNNING;
 
-    }
+        return (ChildNodes.Count - failureCount) >= MinNumberofSuccess + runningCount? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILURE;
 
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
     }
 }

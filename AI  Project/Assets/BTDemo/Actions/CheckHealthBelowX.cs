@@ -1,4 +1,4 @@
-public class CheckHealthBelowX : TaskBTNode
+public class CheckHealthBelowX : ConditionalBTNode
 {
     private float healthThreshold;
     private float health = -1;
@@ -18,16 +18,13 @@ public class CheckHealthBelowX : TaskBTNode
 
     public override void OnExit(IBTNode.ReturnStatus status)
     {
+        base.OnExit(status);
         health = - 1;
     }
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
-        return (health <= healthThreshold) ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILED;
+        return (health <= healthThreshold) ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILURE;
     }
 
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
-    }
 }

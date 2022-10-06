@@ -23,11 +23,17 @@ public class PlayerController : MonoBehaviour , IBlackBoardEntity
     // Update is called once per frame
     void Update()
     {
-        label.text = $"[Player] Hp:{100}";
+        label.text = $"[Player] Hp:{health}";
         label.transform.LookAt(Camera.main.transform);
 
         aiManagerRef.BlackBoard.GetEntity(Id).pos = transform.position;
         aiManagerRef.BlackBoard.GetEntity(Id).health = health;
+
+
+        if (health <= 0)
+        {
+            animator.Play("Dead");
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -49,9 +55,9 @@ public class PlayerController : MonoBehaviour , IBlackBoardEntity
               if (Random.value > 0.5f) animator.Play("Punch1"); else animator.Play("Punch2");
                 for (int i = 0; i <= 10; i++)
                 {
-                    var atkRay = new Ray(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-90 / 2 + ((i / 10f) * 90), Vector3.up) * (transform.forward.normalized * 5));
+                    var atkRay = new Ray(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-90 / 2 + ((i / 10f) * 90), Vector3.up) * (transform.forward.normalized * 15));
                     RaycastHit hitinfo;
-                    if (Physics.Raycast(atkRay, out hitinfo, 5, layerMask) && hitInfo.transform.gameObject.GetComponent<EnemyAi>() != null)
+                    if (Physics.Raycast(atkRay, out hitinfo, 15, layerMask) && hitInfo.transform.gameObject.GetComponent<EnemyAi>() != null)
                     {
                         var enemyAi = hitInfo.transform.gameObject.GetComponent<EnemyAi>();
                         enemyAi.GetAttacked();
@@ -60,7 +66,7 @@ public class PlayerController : MonoBehaviour , IBlackBoardEntity
                     }
                     else
                     {
-                        Debug.DrawRay(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-90 / 2 + ((i / 10f) * 90), Vector3.up) * (transform.forward.normalized * 5), Color.green, 0.25f);
+                        Debug.DrawRay(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-90 / 2 + ((i / 10f) * 90), Vector3.up) * (transform.forward.normalized * 15), Color.green, 0.25f);
                     }
                 }
             }           
@@ -71,4 +77,12 @@ public class PlayerController : MonoBehaviour , IBlackBoardEntity
         animator.SetBool("isWalking", navMeshAgent.velocity.magnitude > 0f);
         animator.SetBool("isIdle", navMeshAgent.velocity.sqrMagnitude <= 0.1f);
     }
+
+    public void GetAttacked()
+    {
+        health -= 10;
+        animator.SetTrigger("hit");
+        aiManagerRef.BlackBoard.GetEntity(Id).health = health;
+    }
+
 }

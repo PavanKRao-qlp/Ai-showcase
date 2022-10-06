@@ -7,13 +7,15 @@ public interface IBTNode {
     public enum ReturnStatus
     {
         INACTIVE,
-        FAILED,
+        FAILURE,
         RUNNING,
-        SUCCESS
+        SUCCESS,
+        ABORTED
     }
 
-    public string Name { get; set; }
-
+    public string TagName { get; set; }
+    public ReturnStatus status { get; set; }
+    public IBTNode ParentNode { get; set; }
     public void OnEnter();
     public void OnExit(ReturnStatus status);
     public ReturnStatus OnUpdate();
@@ -21,8 +23,4 @@ public interface IBTNode {
     public BehaviorTree BT { get; set; }
     public void Reset();
     public void Abort();
-
-#if UNITY_EDITOR
-    public Action<ReturnStatus> OnTick { get; set; }
-#endif
 }

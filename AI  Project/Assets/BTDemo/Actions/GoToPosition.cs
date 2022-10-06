@@ -29,12 +29,8 @@ public class GoToPosition : TaskBTNode
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
-        if (navMeshAgent == null || !foundPos) return IBTNode.ReturnStatus.FAILED;
+        if (navMeshAgent == null || !foundPos) return IBTNode.ReturnStatus.FAILURE;
+        Debug.DrawLine(goToPos + Vector3.up, BT.Agent.GameObject.transform.position + Vector3.up, Color.cyan);
         return (BT.Agent.GameObject.transform.position - navMeshAgent.destination).magnitude <= 0.01f ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.RUNNING;
-    }
-
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
     }
 }

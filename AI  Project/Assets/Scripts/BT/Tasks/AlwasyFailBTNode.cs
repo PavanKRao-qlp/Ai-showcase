@@ -10,10 +10,6 @@ public class AlwasyFailBTNode : TaskBTNode
     public override void OnExit(IBTNode.ReturnStatus status) { }
     public override IBTNode.ReturnStatus OnUpdate()
     {
-        return IBTNode.ReturnStatus.FAILED;
-    }
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
+        return IBTNode.ReturnStatus.FAILURE;
     }
 }

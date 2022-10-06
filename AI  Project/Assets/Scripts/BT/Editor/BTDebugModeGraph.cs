@@ -8,14 +8,17 @@ using UnityEngine.UIElements;
 
 public class BTDebugModeGraph : GraphViewUI
 {
+    List<DebugModeBTNodeView> nodeViews = new List<DebugModeBTNodeView>();
+
     public new class UxmlFactory : UxmlFactory<BTDebugModeGraph, GraphView.UxmlTraits> { }
    
     public void BuildTree(BehaviorTree tree)
     {
         ResetTree(); 
         var nodeView = PropagateNodes(tree.RootNode, 0); 
-        CalculateHeight(nodeView);
+        CalculateChildSpan(nodeView);
         PositionNodes(nodeView, Vector2.zero, 0);
+        FrameAll();
     }
 
     private void PositionNodes(DebugModeBTNodeView nodeView, Vector2 pos, int width = 0)
@@ -30,7 +33,6 @@ public class BTDebugModeGraph : GraphViewUI
                 yIx += nodeView.ParentNode.ChildNodes[i].childSpan;
             }
         }
-       // if (width > 3) nodeView.style.visibility = Visibility.Hidden;
         nodeView.style.left  = yIx * space + (space * (nodeView.childSpan/2f));
         nodeView.Ypos = yIx;
         for (int i = 0; i < nodeView.ChildNodes.Count; i++)
@@ -39,12 +41,12 @@ public class BTDebugModeGraph : GraphViewUI
         }
     }
 
-    private int CalculateHeight(DebugModeBTNodeView node)
+    private int CalculateChildSpan(DebugModeBTNodeView node)
     {
         int h = 0;
         foreach (var child in node.ChildNodes)
         {
-            h += CalculateHeight(child);
+            h += CalculateChildSpan(child);
         }
         if (node.ChildNodes.Count == 0) h = 1;
         node.childSpan = h;
@@ -121,8 +123,9 @@ public class BTDebugModeGraph : GraphViewUI
             title = nodeType.Name,
             NodeData = node
         };
-        node.OnTick += nodeView.RefreshUIOnTick;
+        nodeView.RefreshUIOnTick(node.status);
         this.AddElement(nodeView);
+        nodeViews.Add(nodeView);
         return (nodeView);
     }
 
@@ -136,7 +139,7 @@ public class BTDebugModeGraph : GraphViewUI
     private Edge ConnectPorts(Port inPort, Port outPort)
     {
         var edge = inPort.ConnectTo(outPort);
-       // edge.pickingMode = PickingMode.Ignore;
+        edge.pickingMode = PickingMode.Ignore;
         AddElement(edge);
         return edge;
     }
@@ -146,5 +149,13 @@ public class BTDebugModeGraph : GraphViewUI
         var validPorts = new List<Port>();
         ports.ForEach((port) => { if (startPort != port && startPort.direction != port.direction && port != null) validPorts.Add(port); });
         return validPorts;
+    }
+
+    public void Update()
+    {
+        foreach (var node in nodeViews)
+        {
+            node.Update();
+        }
     }
 }

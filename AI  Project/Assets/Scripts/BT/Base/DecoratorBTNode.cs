@@ -8,9 +8,10 @@ public abstract class DecoratorBTNode : IBTNode
     public IBTNode ChildNode;
     [System.NonSerialized] private BehaviorTree behaviorTree;
     public BehaviorTree BT { get { return behaviorTree; } set { behaviorTree = value; } }
-    protected IBTNode.ReturnStatus status = IBTNode.ReturnStatus.INACTIVE;
+    public IBTNode ParentNode { get; set; }
+    public IBTNode.ReturnStatus status { get; set; } = IBTNode.ReturnStatus.INACTIVE;
     public System.Action<IBTNode.ReturnStatus> OnTick { get; set; }
-    public string Name { get; set; }
+    public string TagName { get; set; }
     public abstract void OnEnter();
     public abstract void OnExit(IBTNode.ReturnStatus status);
     public abstract IBTNode.ReturnStatus OnUpdate();
@@ -24,12 +25,12 @@ public abstract class DecoratorBTNode : IBTNode
         if (status != IBTNode.ReturnStatus.RUNNING && status != IBTNode.ReturnStatus.INACTIVE) return status;
         var curStatus = status = OnUpdate();
         if (status != IBTNode.ReturnStatus.RUNNING) OnExit(status);
-#if UNITY_EDITOR
-        OnTick?.Invoke(curStatus);
-#endif
-        UnityEngine.Debug.Log($"Pvn {this.GetType().Name} {this.Name}  {curStatus}");
         return curStatus;
     }
-    public abstract void Reset();
+    public virtual void Reset()
+    {
+        status = IBTNode.ReturnStatus.INACTIVE;
+        ChildNode.Reset();
+    }
     public abstract void Abort();
 }

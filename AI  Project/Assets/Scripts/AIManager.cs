@@ -10,6 +10,12 @@ public class AIManager : MonoBehaviour
     {
         BlackBoard = new Blackboard();
         behaviourTreeAgents = new List<IAgentBT>();
+      
+    }
+
+    private void Start()
+    {
+        StartCoroutine("TickActiveBehaviourTreeAgents");
     }
 
     public void AddAgent(IAgent agent)
@@ -17,20 +23,23 @@ public class AIManager : MonoBehaviour
         if (typeof(IAgentBT).IsAssignableFrom(agent.GetType()))
         {
             var agentBT = agent as IAgentBT;
-            this.BlackBoard.AddEntity(agentBT.Id);
             behaviourTreeAgents.Add(agentBT);
         }
     }
 
     public void LateUpdate()
     {
-        TickActiveBehaviourTreeAgents();
+        //TickActiveBehaviourTreeAgents();
     }
-    private void TickActiveBehaviourTreeAgents()
+    private IEnumerator TickActiveBehaviourTreeAgents()
     {
-        foreach (var agent in behaviourTreeAgents)
+        while (true)
         {
-            agent.ActiveBehaviorTree?.Tick();
+            foreach (var agent in behaviourTreeAgents)
+            {
+                agent.ActiveBehaviorTree?.Tick();
+            }
+            yield return new WaitForSeconds(0.2f);
         }
     }
 

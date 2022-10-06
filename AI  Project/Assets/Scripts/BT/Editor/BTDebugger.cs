@@ -25,7 +25,7 @@ public class BTDebugger : EditorWindow
         VisualElement root = rootVisualElement;
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/BT/Editor/BehaviourTreeDebugger.uxml");
         var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BT/Editor/BehaviourTreeGenerator.uss");
-        header = new Label("Select a lol");
+        header = new Label("header");
         root.Add(header);
         VisualElement uxmlPane = visualTree.Instantiate();
         var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
@@ -64,6 +64,8 @@ public class BTDebugger : EditorWindow
             redrawTree = false;
             header.text = "";
         }
+        graph.Update();
+
        
     }
 

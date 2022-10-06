@@ -15,31 +15,26 @@ public class SelectorBTNode : CompositeBTNode
 
     public override void OnExit(IBTNode.ReturnStatus status)
     {
-        foreach (var child in ChildNodes)
-        {
-            child.Reset();
-        }
     }
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
+        int childIx = 0;
         foreach (var child in ChildNodes)
         {
             var childStatus = child.Tick();
-            if (childStatus != IBTNode.ReturnStatus.FAILED)
+            if (childStatus != IBTNode.ReturnStatus.FAILURE)
             {
+                if (currentRunningNodeIx != -1 && currentRunningNodeIx > childIx)
+                {
+                        ChildNodes[currentRunningNodeIx].Abort();
+                }
+                if (childStatus == IBTNode.ReturnStatus.RUNNING)
+                    currentRunningNodeIx = childIx;
                 return childStatus;
             }
+            childIx++;
         }
-        return IBTNode.ReturnStatus.FAILED;
-    }
-
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
-        foreach (var child in ChildNodes)
-        {
-            child.Reset();
-        }
+        return IBTNode.ReturnStatus.FAILURE;
     }
 }

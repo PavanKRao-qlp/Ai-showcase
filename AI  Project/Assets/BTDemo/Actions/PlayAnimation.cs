@@ -7,6 +7,7 @@ public class PlayAnimation : TaskBTNode
     private float timeElapsed;
     private Animator animator;
     private float animDur;
+    private float animStartTime;
 
     public PlayAnimation(string animName)
     {
@@ -30,6 +31,7 @@ public class PlayAnimation : TaskBTNode
         {
             animator.Play(animationName);
             animDur = 1.5f;
+            animStartTime = Time.time;
         }
     }
 
@@ -41,17 +43,11 @@ public class PlayAnimation : TaskBTNode
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
-        if (animator == null) return IBTNode.ReturnStatus.FAILED;
-        timeElapsed += Time.deltaTime;
+        if (animator == null) return IBTNode.ReturnStatus.FAILURE;
+        timeElapsed =  Time.time - animStartTime;
         return CheckIfAnimationCompleted() ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.RUNNING;
     }
 
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
-        timeElapsed = 0;
-        animDur = 0;
-    }
     public override void Abort()
     {
         throw new NotImplementedException();

@@ -12,8 +12,4 @@ public class AlwasySucceedlBTNode : TaskBTNode
     {
         return IBTNode.ReturnStatus.SUCCESS;
     }
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
-    }
 }

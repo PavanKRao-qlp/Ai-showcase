@@ -17,24 +17,10 @@ public class SelectorRandomBTNode : CompositeBTNode
 
     public override void OnExit(IBTNode.ReturnStatus status)
     {
-        foreach (var child in ChildNodes)
-        {
-            child.Reset();
-        }
     }
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
         return ChildNodes[randomIx].Tick();
-    }
-
-    public override void Reset()
-    {
-        status = IBTNode.ReturnStatus.INACTIVE;
-        randomIx = -1;
-        foreach (var child in ChildNodes)
-        {
-            child.Reset();
-        }
     }
 }

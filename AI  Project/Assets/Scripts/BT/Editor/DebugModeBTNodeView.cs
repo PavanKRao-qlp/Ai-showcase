@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -33,7 +34,6 @@ public class DebugModeBTNodeView : NodeViewUI
 
     public void RefreshUIOnTick(IBTNode.ReturnStatus status)
     {
-       // Debug.Log($"Pvn {NodeData.GetType().Name} {NodeData.Name}  {status}");
         switch (status)
         {
             case IBTNode.ReturnStatus.INACTIVE:
@@ -45,9 +45,15 @@ public class DebugModeBTNodeView : NodeViewUI
                 {
                     titleContainer.style.backgroundColor = new Color(150,150,0,205); break;
                 }
-            case IBTNode.ReturnStatus.FAILED: { titleContainer.style.backgroundColor = new Color(150, 0, 0); break; }
+            case IBTNode.ReturnStatus.FAILURE: { titleContainer.style.backgroundColor = new Color(150, 0, 0); break; }
             case IBTNode.ReturnStatus.SUCCESS: { titleContainer.style.backgroundColor = new Color(0, 50, 0, 205 ); break; }
+            case IBTNode.ReturnStatus.ABORTED: { titleContainer.style.backgroundColor = new Color(50, 0, 50, 205); break; }
             default: break;
         }
+    }
+
+    internal void Update()
+    {
+        RefreshUIOnTick(NodeData.status);
     }
 }

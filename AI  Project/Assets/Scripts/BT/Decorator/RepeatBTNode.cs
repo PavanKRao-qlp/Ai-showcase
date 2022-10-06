@@ -13,7 +13,6 @@ public class RepeatBTNode : DecoratorBTNode
     public override void OnExit(IBTNode.ReturnStatus status)
     {
         timesRepeated = 0;
-        Reset();
     }
 
     public override IBTNode.ReturnStatus OnUpdate()
@@ -26,11 +25,6 @@ public class RepeatBTNode : DecoratorBTNode
         return (repeatCount == -1 || timesRepeated < repeatCount) ? IBTNode.ReturnStatus.RUNNING : status;
     }
 
-    public override void Reset()
-    {
-        this.status = IBTNode.ReturnStatus.INACTIVE;
-        ChildNode.Reset();
-    }
     public override void Abort()
     {
         throw new System.NotImplementedException();

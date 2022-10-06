@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckIfPlayerIsVisible : TaskBTNode
+public class CheckIfPlayerIsVisible : ConditionalBTNode
 {
     public override void Abort()
     {
@@ -11,17 +11,19 @@ public class CheckIfPlayerIsVisible : TaskBTNode
 
     public override void OnEnter() { }
 
-    public override void OnExit(IBTNode.ReturnStatus status) {}
+    public override void OnExit(IBTNode.ReturnStatus status) {
+        base.OnExit(status);
+    }
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
-        Debug.Log(BT.Blackboard.GetEntity(BT.Agent.Id).canSeeTarget);
-        return BT.Blackboard.GetEntity(BT.Agent.Id).canSeeTarget ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILED;
+        Debug.Log($"can see player {BT.Blackboard.GetEntity(BT.Agent.Id).canSeeTarget}");
+        return BT.Blackboard.GetEntity(BT.Agent.Id).canSeeTarget ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILURE;
     }
 
     public override void Reset()
     {
         status = IBTNode.ReturnStatus.INACTIVE;
-    }
+    } 
 
 }
