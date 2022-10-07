@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConditionalBTNode : TaskBTNode
+public class MonitorBTNode : TaskBTNode
 {
     public enum InteruptRules
     {
@@ -18,6 +18,7 @@ public class ConditionalBTNode : TaskBTNode
     public override void OnEnter() { }
     public override void OnExit(IBTNode.ReturnStatus status)
     {
+        this.status = IBTNode.ReturnStatus.INACTIVE;
     }
     public override IBTNode.ReturnStatus Tick()
     {

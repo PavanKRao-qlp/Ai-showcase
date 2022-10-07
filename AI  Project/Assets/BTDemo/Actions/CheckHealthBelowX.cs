@@ -1,4 +1,4 @@
-public class CheckHealthBelowX : ConditionalBTNode
+public class CheckHealthBelowX : MonitorBTNode
 {
     private float healthThreshold;
     private float health = -1;

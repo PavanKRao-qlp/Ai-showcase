@@ -17,14 +17,14 @@ public class BTDebugModeGraph : GraphViewUI
         ResetTree(); 
         var nodeView = PropagateNodes(tree.RootNode, 0); 
         CalculateChildSpan(nodeView);
-        PositionNodes(nodeView, Vector2.zero, 0);
+        PositionNodes(nodeView, 0);
         FrameAll();
     }
 
-    private void PositionNodes(DebugModeBTNodeView nodeView, Vector2 pos, int width = 0)
+    private void PositionNodes(DebugModeBTNodeView nodeView, int Ypos)
     {
-        int space = 200;
-        nodeView.style.top = pos.x;
+        int space = 250;
+        nodeView.style.top = Ypos;
         int yIx = 0;
         if (nodeView.ParentNode != null) {
             yIx += nodeView.ParentNode.Ypos;
@@ -37,7 +37,7 @@ public class BTDebugModeGraph : GraphViewUI
         nodeView.Ypos = yIx;
         for (int i = 0; i < nodeView.ChildNodes.Count; i++)
         {
-            PositionNodes(nodeView.ChildNodes[i], new Vector2(pos.x + space, 0 ), width + 1);
+            PositionNodes(nodeView.ChildNodes[i], Ypos + space);
         }
     }
 
@@ -104,10 +104,6 @@ public class BTDebugModeGraph : GraphViewUI
             childNode.ParentEdge = edge;
             ix++;
         }
-        //var vsElement = new VisualElement();
-        //vsElement.style.backgroundColor = new Color(15, 15, 15);
-        //vsElement.Add(new Label("G"));
-        //nodeView.contentContainer.Add(vsElement);
         nodeView.RefreshPorts();
         nodeView.RefreshExpandedState();
         return nodeView;
@@ -134,6 +130,7 @@ public class BTDebugModeGraph : GraphViewUI
         Port port = nodeView.InstantiatePort(Orientation.Vertical,direction, Port.Capacity.Single, typeof(IBTNode));
         port.portName = "";
         container.Add(port);
+        port.pickingMode = PickingMode.Ignore;
         return port;
     }
     private Edge ConnectPorts(Port inPort, Port outPort)

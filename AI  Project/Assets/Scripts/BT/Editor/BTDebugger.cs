@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 public class BTDebugger : EditorWindow
 {
     private IAgentBT activeBtAgent;
-    private VisualElement inspectorPane;
+    private BTBlackBoardView inspectorPane;
     private BTDebugModeGraph graph;
     private Label header;
     private bool redrawTree = true;
@@ -29,7 +29,7 @@ public class BTDebugger : EditorWindow
         root.Add(header);
         VisualElement uxmlPane = visualTree.Instantiate();
         var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
-        inspectorPane = new VisualElement();
+        inspectorPane = new BTBlackBoardView();
         splitView.Add(inspectorPane);
         graph = uxmlPane.Q<BTDebugModeGraph>("graph");
         splitView.Add(uxmlPane);
@@ -46,7 +46,6 @@ public class BTDebugger : EditorWindow
         {
             header.text = "Must be in playmode to visualize!";
             return;
-
         }
         if (activeBtAgent == null)
         {
@@ -61,12 +60,17 @@ public class BTDebugger : EditorWindow
         if (redrawTree == true)
         {
             RebuildTree();
+            inspectorPane.Initialize();
             redrawTree = false;
             header.text = "";
         }
         graph.Update();
+        ShowBlackBoard();
+    }
 
-       
+    private void ShowBlackBoard()
+    {
+        inspectorPane.DrawBlackBoard(activeBtAgent.ActiveBehaviorTree.Blackboard);
     }
 
     private void OnSelectionChange()

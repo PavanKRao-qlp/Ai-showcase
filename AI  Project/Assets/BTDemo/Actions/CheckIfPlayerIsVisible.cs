@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckIfPlayerIsVisible : ConditionalBTNode
+public class CheckIfPlayerIsVisible : MonitorBTNode
 {
     public override void Abort()
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DummyConditional : ConditionalBTNode
+public class DummyConditional : MonitorBTNode
 {
     private int conditionFlag;
     public DummyConditional(int conditionFlag)

@@ -9,24 +9,15 @@ using UnityEngine;
 
 public class Blackboard 
 {
-    private Dictionary<string, dynamic> data; 
+
+#if UNITY_EDITOR
+    public Dictionary<string, ExpandoObject> Data => data;
+#endif
+
+    private Dictionary<string, ExpandoObject> data; 
     public Blackboard()
     {
-        data = new Dictionary<string, dynamic>();
-    }
-    public void Start()
-    {
-        //var personData = new JObject() { { "Name", "Pavan" }, { "age", 25 }, { "level", 50 } };
-        //var personData2 = new JObject() { { "Name", "Pavan" }, { "age", 25 }, { "level", 50 } };
-        //var weaponData = new JObject() { { "Name", "Sword" }, { "damage", "50" }, {"levelReq" , 20 } };
-        //data.Add("Pavan", personData);
-        //data.Add("Pavan2", personData2);
-        //data.Add("Sword", weaponData);
-        //string Json = JsonConvert.SerializeObject(data);
-        //var obj = JsonConvert.DeserializeObject<Dictionary<string, object>>(Json);
-        //File.WriteAllText(Application.dataPath + "/data.json", Json);
-        //bool isTrue = data["Pavan"].Equals(data["Pavan2"]);
-        //Debug.Log(isTrue);     
+        data = new Dictionary<string, ExpandoObject>();
     }
 
     public dynamic GetEntity(string id)
@@ -42,10 +33,6 @@ public class Blackboard
     {
         data.Add(Id, new ExpandoObject());
     }
-    /// <summary>
-    /// Very expensive , use with caution!
-    /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
         return "";//  return JsonConvert.SerializeObject(data, Formatting.Indented);

@@ -66,6 +66,11 @@ public class BehaviourTreeBuilder
         AttachChild(node);
         return this;
     }
+    public BehaviourTreeBuilder AttachMonitor<T>(T node) where T : MonitorBTNode
+    {
+        AttachChild(node);
+        return this;
+    }
 
     private void AttachChild(IBTNode node)
     {
