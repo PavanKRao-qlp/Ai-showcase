@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DummyConditional : ConditionalBTNode
+public class DummyMonitor : MonitorBTNode
 {
     private int conditionFlag;
-    public DummyConditional(int conditionFlag)
+    public DummyMonitor(int conditionFlag)
     {
         this.conditionFlag = conditionFlag;
     }

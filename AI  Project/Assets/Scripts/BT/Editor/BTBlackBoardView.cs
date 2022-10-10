@@ -17,6 +17,7 @@ public class BTBlackBoardView : VisualElement
     private Dictionary<string, EntityUIData> entityDict = new Dictionary<string, EntityUIData>();
     public void Initialize()
     {
+        this.Clear();
         entityDict = new Dictionary<string, EntityUIData>();
         blackBoardHolder = new VisualElement();
         this.Add(blackBoardHolder);

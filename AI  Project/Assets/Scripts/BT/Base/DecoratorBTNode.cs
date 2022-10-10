@@ -22,7 +22,6 @@ public abstract class DecoratorBTNode : IBTNode
             OnEnter();
             status = IBTNode.ReturnStatus.RUNNING;
         }
-        if (status != IBTNode.ReturnStatus.RUNNING && status != IBTNode.ReturnStatus.INACTIVE) return status;
         var curStatus = status = OnUpdate();
         if (status != IBTNode.ReturnStatus.RUNNING) OnExit(status);
         return curStatus;

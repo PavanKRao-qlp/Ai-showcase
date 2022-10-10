@@ -5,21 +5,22 @@ using UnityEngine;
 public class BTDemoScene : MonoBehaviour
 {
     public AIManager AImanager;
-    public EnemyAi EnemyAiObj;
+    public List<EnemyAi> EnemyAiObjs;
 
     void Awake()
     {
-        EnemyAiObj.AIManagerRef = AImanager;
+        foreach (var agent in EnemyAiObjs)
+        {
+            agent.AIManagerRef = AImanager;
+        }
       
     }
 
     private void Start()
     {
-        AImanager.AddAgent(EnemyAiObj);
-    }
-
-    void Update()
-    {
-        
+        foreach (var agent in EnemyAiObjs)
+        {
+            AImanager.AddAgent(agent);
+        }     
     }
 }

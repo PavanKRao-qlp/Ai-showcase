@@ -22,6 +22,6 @@ public class AttackTarget : TaskBTNode
 
     public override void Abort()
     {
-        throw new NotImplementedException();
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
 }

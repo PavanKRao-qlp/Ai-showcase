@@ -38,7 +38,7 @@ public class EnemyAi : MonoBehaviour , IAgentBT
         BBEntity.targetId = "";
         BBEntity.health = health;
         BBEntity.condtition = 0;
-        activeBehaviorTree = BuildBTTreeV3();
+        activeBehaviorTree = BuildBTTreeV2();
     }
 
     public BehaviorTree BuildBTTreeV2()
@@ -46,41 +46,42 @@ public class EnemyAi : MonoBehaviour , IAgentBT
         var btBuilder = new BehaviourTreeBuilder()
             .AttachAgent(this)
             .AttachBlackBoard(AIManagerRef.BlackBoard)
-            .AttachSelector()
-                .AttachSequence()
-                    .AttachMonitor(new CheckHealthBelowX(0))
+            .Selector()
+                .Sequence()
+                    .Monitor(new CheckHealthBelowX(0))
                     .AttachTask(new PlayAnimation("Dead"))
                     .AttachDecorater(new RepeatBTNode())
                         .AttachTask(new AlwasySucceedlBTNode())
                     .End()
                 .End()
-                .AttachSequence()
-                    .AttachSequence()
-                        .AttachMonitor(new CheckIfPlayerIsVisible())
-                        .AttachSelector()
-                            .AttachSequence()
-                                .AttachMonitor(new CheckHealthBelowX(20))
-                                .AttachTask(new FindSafeArea())
+                .Sequence()
+                    .Monitor(new CheckIfPlayerIsVisible())
+                    .Conditional(new CheckIfTargetIsAlive())
+                    .Selector()
+                        .Sequence()
+                             .Invert()
+                                .Monitor(new CheckIfPlayerIsInRange(2f))
+                             .End()
+                             .Parallel()
+                                .AttachDecorater(new RepeatBTNode())
+                                    .AttachTask(new SetPositionNearTarget())
+                                .End()
                                 .AttachTask(new GoToPosition())
                             .End()
-                            .AttachSequence()
-                                .AttachTask(new SetPositionNearTarget())
-                                .AttachTask(new GoToPosition())
-                                .AttachParallel()
-                                    .AttachComposite(new SelectorRandomBTNode())
-                                        .AttachTask(new PlayAnimation("Punch1"))
-                                        .AttachTask(new PlayAnimation("Punch2"))
-                                    .End()
-                                    .AttachSequence()
-                                        .AttachTask(new WaitXSec(0.4f))
-                                        .AttachTask(new AttackTarget())
-                                    .End()
-                                .End()
+                        .End()
+                        .Parallel()
+                            .Composite(new SelectorRandomBTNode())
+                                .AttachTask(new PlayAnimation("Punch1"))
+                                .AttachTask(new PlayAnimation("Punch2"))
+                            .End()
+                            .Sequence()
+                                .AttachTask(new WaitXSec(0.4f))
+                                .AttachTask(new AttackTarget())
                             .End()
                         .End()
                     .End()
                 .End()
-                .AttachSequence()
+                .Sequence()
                     .AttachTask(new SetRandomPositionNearby() { DistanceRange = 50})
                     .AttachTask(new GoToPosition())
                     .AttachDecorater(new RepeatBTNode(2))
@@ -90,27 +91,37 @@ public class EnemyAi : MonoBehaviour , IAgentBT
             .End();
         return btBuilder.BuildTree();
     }
-    public BehaviorTree BuildBTTreeV3()
+    public BehaviorTree BuildBTTreeTest()
     {
         var btBuilder = new BehaviourTreeBuilder()
             .AttachAgent(this)
             .AttachBlackBoard(AIManagerRef.BlackBoard)
-            .AttachSelector("select")
-                .AttachSequence("seqa")
-                    .AttachMonitor(new DummyConditional(1))
-                    .AttachTask(new WaitXSec(5) { TagName = "a1" })
-                    .AttachTask(new WaitXSec(10) { TagName = "a2" })
-                .End()
-                //.AttachSequence()
-                //    .AttachConditional(new DummyConditional(2))
-                //    .AttachTask(new WaitXSec(5))
-                //    .AttachTask(new WaitXSec(10))
-                //.End()
-                .AttachSequence("seqb")
-                    .AttachTask(new WaitXSec(5) { TagName = "b1" })
-                    .AttachTask(new WaitXSec(10) { TagName = "b2" })
-                .End()
-            .End();
+            .Sequence()
+                .Monitor(new CheckIfPlayerIsVisible())
+                .Conditional(new CheckIfTargetIsAlive())
+                .Selector()
+                    .Sequence()
+                        .Invert()
+                            .Monitor(new CheckIfPlayerIsInRange(2f))
+                        .End()
+                        .Parallel()
+                            .AttachDecorater(new RepeatBTNode())
+                                .AttachTask(new SetPositionNearTarget())
+                            .End()
+                            .AttachTask(new GoToPosition())
+                        .End()
+                    .End()
+                    .Parallel()
+                        .Composite(new SelectorRandomBTNode())
+                            .AttachTask(new PlayAnimation("Punch1"))
+                            .AttachTask(new PlayAnimation("Punch2"))
+                        .End()
+                        .Sequence()
+                            .AttachTask(new WaitXSec(0.4f))
+                            .AttachTask(new AttackTarget())
+                        .End()
+                    .End()
+                 .End();
         return btBuilder.BuildTree();
     }
 
@@ -233,7 +244,9 @@ public class EnemyAi : MonoBehaviour , IAgentBT
 
     public void GetAttacked()
     {
-        health -= 10;
+        if (health <= 0)
+            return;
+        health = health - 45 < 0 ? 0 : health - 45;
         animator.SetTrigger("hit");
         AIManagerRef.BlackBoard.GetEntity(Id).health = health;
     }
@@ -271,7 +284,7 @@ public class EnemyAi : MonoBehaviour , IAgentBT
     public void CheckCanSeeTarget() {
         var foundTarget = false;
         float angle = 90;
-        float fine = 15;
+        float fine = 20;
         for (int i = 0; i <= fine; i++)
         {
             var ray = new Ray(this.transform.position + new Vector3(0, 2, 0) + (transform.forward * 0.75f), Quaternion.AngleAxis(-angle / 2 + ((i / fine) * angle), Vector3.up) * (transform.forward.normalized * 20));
@@ -281,15 +294,13 @@ public class EnemyAi : MonoBehaviour , IAgentBT
                 string otherId = hitinfo.collider.GetComponent<IBlackBoardEntity>()?.Id ?? null;
                 if (!string.IsNullOrEmpty(otherId) && otherId == "player")
                 {
-                    if (AIManagerRef.BlackBoard.GetEntity(otherId).health > 0)
-                    {
                         AIManagerRef.BlackBoard.GetEntity(Id).canSeeTarget = true;
                         AIManagerRef.BlackBoard.GetEntity(Id).targetPos = hitinfo.collider.transform.position;
                         AIManagerRef.BlackBoard.GetEntity(Id).targetId = otherId;
+                        AIManagerRef.BlackBoard.GetEntity(Id).targetDist = (this.transform.position - hitinfo.collider.transform.position).magnitude;
                         foundTarget = true;
                         Debug.DrawLine(this.transform.position + new Vector3(0, 2, 0), hitinfo.point, Color.red);
-                        break;
-                    }
+                        break;                   
                 }
             }
             else
@@ -301,6 +312,7 @@ public class EnemyAi : MonoBehaviour , IAgentBT
         {
             AIManagerRef.BlackBoard.GetEntity(Id).canSeeTarget = false;
             AIManagerRef.BlackBoard.GetEntity(Id).targetId = "";
+            AIManagerRef.BlackBoard.GetEntity(Id).targetDist = float.MaxValue;
         }
     }
 

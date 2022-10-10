@@ -11,7 +11,7 @@ public class SetRandomPositionNearby : TaskBTNode
     {
         if (BT?.Agent?.GameObject == null || BT?.Blackboard == null) return IBTNode.ReturnStatus.FAILURE;
         var randomPos = Random.insideUnitSphere * DistanceRange;
-        position = BT.Agent.GameObject.transform.position + new Vector3(randomPos.x, 0, randomPos.z);
+        position =  new Vector3(randomPos.x, BT.Agent.GameObject.transform.position.y, randomPos.z);
         var arrayPos = new float[] { position.x, position.y, position.z };
         BT.Blackboard.GetEntity(BT.Agent.Id).goToPos = position;
         return IBTNode.ReturnStatus.SUCCESS;
@@ -23,6 +23,7 @@ public class SetRandomPositionNearby : TaskBTNode
     }
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        BT.Blackboard.GetEntity(BT.Agent.Id).goToPos = Vector3.zero;
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
 }

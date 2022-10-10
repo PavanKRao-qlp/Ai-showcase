@@ -4,7 +4,7 @@ public class AlwasyFailBTNode : TaskBTNode
 {
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
     public override void OnEnter() { }
     public override void OnExit(IBTNode.ReturnStatus status) { }

@@ -19,10 +19,6 @@ public class ConditionalBTNode : TaskBTNode
     public override void OnExit(IBTNode.ReturnStatus status)
     {
     }
-    public override IBTNode.ReturnStatus Tick()
-    {
-        return status = OnUpdate();
-    }
     public override IBTNode.ReturnStatus OnUpdate()
     {
         return IBTNode.ReturnStatus.RUNNING;

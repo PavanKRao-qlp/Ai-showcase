@@ -23,7 +23,7 @@ public class BTDebugModeGraph : GraphViewUI
 
     private void PositionNodes(DebugModeBTNodeView nodeView, int Ypos)
     {
-        int space = 250;
+        int space = 275;
         nodeView.style.top = Ypos;
         int yIx = 0;
         if (nodeView.ParentNode != null) {
@@ -37,7 +37,7 @@ public class BTDebugModeGraph : GraphViewUI
         nodeView.Ypos = yIx;
         for (int i = 0; i < nodeView.ChildNodes.Count; i++)
         {
-            PositionNodes(nodeView.ChildNodes[i], Ypos + space);
+            PositionNodes(nodeView.ChildNodes[i], Ypos + 150);
         }
     }
 

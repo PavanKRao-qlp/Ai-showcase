@@ -27,6 +27,6 @@ public class RepeatBTNode : DecoratorBTNode
 
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
 }

@@ -29,22 +29,22 @@ public class BehaviourTreeBuilder
         behaviorTree.Agent = agent;
         return this;
     }
-    public BehaviourTreeBuilder AttachSelector(string tagName = "")
+    public BehaviourTreeBuilder Selector(string tagName = "")
     {
-        AttachComposite(new SelectorBTNode() { TagName = tagName });
+        Composite(new SelectorBTNode() { TagName = tagName });
         return this;
     }
-    public BehaviourTreeBuilder AttachSequence(string tagName = "")
+    public BehaviourTreeBuilder Sequence(string tagName = "")
     {
-        AttachComposite(new SequenceBTNode() { TagName = tagName });
+        Composite(new SequenceBTNode() { TagName = tagName });
         return this;
     }
-    public BehaviourTreeBuilder AttachParallel()
+    public BehaviourTreeBuilder Parallel()
     {
-        AttachComposite(new ParallelBTNode());
+        Composite(new ParallelBTNode());
         return this;
     }
-    public BehaviourTreeBuilder AttachComposite<T>(T node) where T : CompositeBTNode
+    public BehaviourTreeBuilder Composite<T>(T node) where T : CompositeBTNode
     {
         AttachChild(node);
         currentNode = node;
@@ -56,17 +56,23 @@ public class BehaviourTreeBuilder
         currentNode = node;
         return this;
     }
+    public BehaviourTreeBuilder Invert(string tagName = "")
+    {
+        AttachDecorater(new InverterBTNode() { TagName = tagName });
+        return this;
+    }
+
     public BehaviourTreeBuilder AttachTask<T>(T node) where T : TaskBTNode
     {
         AttachChild(node);
         return this;
     }
-    public BehaviourTreeBuilder AttachConditional<T>(T node) where T : ConditionalBTNode
+    public BehaviourTreeBuilder Conditional<T>(T node) where T : ConditionalBTNode
     {
         AttachChild(node);
         return this;
     }
-    public BehaviourTreeBuilder AttachMonitor<T>(T node) where T : MonitorBTNode
+    public BehaviourTreeBuilder Monitor<T>(T node) where T : MonitorBTNode
     {
         AttachChild(node);
         return this;

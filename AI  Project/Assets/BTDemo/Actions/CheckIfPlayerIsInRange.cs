@@ -2,8 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckIfPlayerIsVisible : MonitorBTNode
+public class CheckIfPlayerIsInRange : MonitorBTNode
 {
+    float range = 0;
+    public CheckIfPlayerIsInRange(float range)
+    {
+        this.range = range;
+    }
     public override void Abort()
     {
         this.status = IBTNode.ReturnStatus.ABORTED;
@@ -17,8 +22,7 @@ public class CheckIfPlayerIsVisible : MonitorBTNode
 
     public override IBTNode.ReturnStatus OnUpdate()
     {
-        Debug.Log($"can see player {BT.Blackboard.GetEntity(BT.Agent.Id).canSeeTarget}");
-        return BT.Blackboard.GetEntity(BT.Agent.Id).canSeeTarget ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILURE;
+        return BT.Blackboard.GetEntity(BT.Agent.Id).targetDist <= range ? IBTNode.ReturnStatus.SUCCESS : IBTNode.ReturnStatus.FAILURE;
     }
 
     public override void Reset()

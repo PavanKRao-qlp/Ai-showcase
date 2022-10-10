@@ -12,6 +12,7 @@ public class SetPositionNearTarget : TaskBTNode
         Vector3 tagetPos = BT.Blackboard.GetEntity(BT.Agent.Id).targetPos;
         tagetPos = tagetPos - (tagetPos.normalized * 2f);
         BT.Blackboard.GetEntity(BT.Agent.Id).goToPos = tagetPos;
+        BT.Agent.GameObject.transform.LookAt(BT.Blackboard.GetEntity(BT.Agent.Id).targetPos);
         return IBTNode.ReturnStatus.SUCCESS;
     }
 
@@ -21,6 +22,6 @@ public class SetPositionNearTarget : TaskBTNode
     }
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
 }

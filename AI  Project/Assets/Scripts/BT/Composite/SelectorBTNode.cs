@@ -6,7 +6,8 @@ public class SelectorBTNode : CompositeBTNode
 {
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        if (currentRunningNodeIx > -1)
+            ChildNodes[currentRunningNodeIx].Abort();
     }
 
     public override void OnEnter()

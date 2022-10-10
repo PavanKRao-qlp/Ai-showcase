@@ -14,7 +14,12 @@ public class ParallelBTNode : CompositeBTNode
 
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        foreach (var child in ChildNodes)
+        {
+            if (child.status == IBTNode.ReturnStatus.RUNNING)
+                child.Abort();
+        }
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
 
     public override void OnEnter()

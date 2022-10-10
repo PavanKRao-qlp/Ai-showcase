@@ -13,16 +13,29 @@ public class MonitorBTNode : TaskBTNode
     }
     public override void Abort()
     {
-        throw new System.NotImplementedException();
+        this.status = IBTNode.ReturnStatus.ABORTED;
     }
-    public override void OnEnter() { }
+    public override void OnEnter() { 
+    
+    }
     public override void OnExit(IBTNode.ReturnStatus status)
     {
-        this.status = IBTNode.ReturnStatus.INACTIVE;
     }
     public override IBTNode.ReturnStatus Tick()
     {
-        return status = OnUpdate();
+        if (status == IBTNode.ReturnStatus.ABORTED)
+        {
+            Reset();
+        }
+        if (status == IBTNode.ReturnStatus.INACTIVE)
+        {
+            OnEnter();
+            status = IBTNode.ReturnStatus.RUNNING;
+        }
+        var curStatus = status = OnUpdate();
+        if (status != IBTNode.ReturnStatus.RUNNING)
+            OnExit(status);
+        return curStatus;
     }
     public override IBTNode.ReturnStatus OnUpdate()
     {
