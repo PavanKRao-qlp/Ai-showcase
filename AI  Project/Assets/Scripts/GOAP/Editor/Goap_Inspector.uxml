@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/GOAP/Editor/GOAP_VisualizerEditor.uss?fileID=7433441132597879392&amp;guid=ef225ef21424f964698f11c48778b99a&amp;type=3#GOAP_VisualizerEditor" />
+    <ui:VisualElement name="WorldState" style="height: 35%; width: 100%; flex-grow: 0;">
+        <ui:Label text="WorldState" display-tooltip-when-elided="true" style="font-size: 20px; -unity-text-align: middle-center; background-color: rgb(78, 78, 78); -unity-font-style: bold; color: rgb(255, 255, 255); border-left-color: rgb(56, 56, 56); border-right-color: rgb(56, 56, 56); border-top-color: rgb(56, 56, 56); border-bottom-color: rgb(56, 56, 56); border-left-width: 5px; border-right-width: 5px; border-top-width: 5px; border-bottom-width: 5px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px;" />
+        <ui:ScrollView name="WorldStateScroll" style="flex-grow: 1;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="AllActions" style="width: 100%; height: 35%;">
+        <ui:Label text="Actions" display-tooltip-when-elided="true" style="font-size: 20px; -unity-text-align: middle-center; background-color: rgb(78, 78, 78); -unity-font-style: bold; color: rgb(255, 255, 255); -unity-text-outline-color: rgb(127, 127, 127); border-left-color: rgb(56, 56, 56); border-left-width: 5px; border-right-width: 5px; border-top-width: 5px; border-bottom-width: 5px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-right-color: rgb(56, 56, 56); border-top-color: rgb(56, 56, 56); border-bottom-color: rgb(56, 56, 56);" />
+        <ui:ListView focusable="true" name="ActionScroll" style="flex-grow: 1;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="Goal" style="width: 100%; height: 35%;">
+        <ui:Label text="Goal" display-tooltip-when-elided="true" style="font-size: 20px; -unity-text-align: middle-center; background-color: rgb(78, 78, 78); -unity-font-style: bold; color: rgb(255, 255, 255); -unity-text-outline-width: 0; border-left-width: 5px; border-right-width: 5px; border-top-width: 5px; border-bottom-width: 5px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-left-color: rgb(56, 56, 56); border-right-color: rgb(56, 56, 56); border-top-color: rgb(56, 56, 56); border-bottom-color: rgb(56, 56, 56);" />
+        <ui:ListView focusable="true" name="GoalScroll" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>
